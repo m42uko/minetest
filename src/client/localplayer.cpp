@@ -630,14 +630,22 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
+	/*
+		Normalize the vector if two directions are pressed at the same
+		time, causing the vector to have a length of up to sqrt(2).
+	*/
+	float speedH_length = speedH.getLength();
+	if (speedH_length > 1.0)
+		speedH /= speedH_length;
+
 	// The speed of the player (Y is ignored)
 	if (superspeed || (is_climbing && fast_climb) ||
 			((in_liquid || in_liquid_stable) && fast_climb))
-		speedH = speedH.normalize() * movement_speed_fast;
+		speedH *= movement_speed_fast;
 	else if (control.sneak && !free_move && !in_liquid && !in_liquid_stable)
-		speedH = speedH.normalize() * movement_speed_crouch;
+		speedH *= movement_speed_crouch;
 	else
-		speedH = speedH.normalize() * movement_speed_walk;
+		speedH *= movement_speed_walk;
 
 	// Acceleration increase
 	f32 incH = 0.0f; // Horizontal (X, Z)
