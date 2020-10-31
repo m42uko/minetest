@@ -488,7 +488,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	// All vectors are relative to the player's yaw,
 	// (and pitch if pitch move mode enabled),
 	// and will be rotated at the end
-	v3f speedH, speedV; // Horizontal (X, Z) and Vertical (Y)
+	v3f speedH, speedV = v3f(0.0f, 0.0f, 0.0f); // Horizontal (X, Z) and Vertical (Y)
 
 	bool fly_allowed = m_client->checkLocalPrivilege("fly");
 	bool fast_allowed = m_client->checkLocalPrivilege("fast");
@@ -566,23 +566,22 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (control.up)
-		speedH += v3f(0.0f, 0.0f, 1.0f);
+	if (control.is_keyboard) {
+		if (control.up)
+			speedH += v3f(0.0f, 0.0f, 1.0f);
 
-	if (control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f);
+		if (control.down)
+			speedH += v3f(0.0f, 0.0f, -1.0f);
 
-	if (!control.up && !control.down)
+		if (control.left)
+			speedH += v3f(-1.0f, 0.0f, 0.0f);
+
+		if (control.right)
+			speedH += v3f(1.0f, 0.0f, 0.0f);
+	} else {
 		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-
-	if (control.left)
-		speedH += v3f(-1.0f, 0.0f, 0.0f);
-
-	if (control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f);
-
-	if (!control.left && !control.right)
 		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+	}
 
 	if (m_autojump) {
 		// release autojump after a given time

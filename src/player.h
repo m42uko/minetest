@@ -59,6 +59,7 @@ struct PlayerControl
 		bool a_zoom,
 		bool a_dig,
 		bool a_place,
+		bool a_is_keyboard,
 		float a_pitch,
 		float a_yaw,
 		float a_sidew_move_joystick_axis,
@@ -75,6 +76,7 @@ struct PlayerControl
 		zoom = a_zoom;
 		dig = a_dig;
 		place = a_place;
+		is_keyboard = a_is_keyboard;
 		pitch = a_pitch;
 		yaw = a_yaw;
 		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
@@ -90,6 +92,7 @@ struct PlayerControl
 	bool zoom = false;
 	bool dig = false;
 	bool place = false;
+	bool is_keyboard = false;
 	float pitch = 0.0f;
 	float yaw = 0.0f;
 	float sidew_move_joystick_axis = 0.0f;
