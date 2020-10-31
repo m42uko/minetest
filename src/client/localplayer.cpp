@@ -566,23 +566,22 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		}
 	}
 
-	if (control.up)
-		speedH += v3f(0.0f, 0.0f, 1.0f);
+	if (control.is_keyboard) {
+		if (control.up)
+			speedH += v3f(0.0f, 0.0f, 1.0f);
 
-	if (control.down)
-		speedH -= v3f(0.0f, 0.0f, 1.0f);
+		if (control.down)
+			speedH -= v3f(0.0f, 0.0f, 1.0f);
 
-	if (!control.up && !control.down)
+		if (control.left)
+			speedH += v3f(-1.0f, 0.0f, 0.0f);
+
+		if (control.right)
+			speedH += v3f(1.0f, 0.0f, 0.0f);
+	} else {
 		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-
-	if (control.left)
-		speedH += v3f(-1.0f, 0.0f, 0.0f);
-
-	if (control.right)
-		speedH += v3f(1.0f, 0.0f, 0.0f);
-
-	if (!control.left && !control.right)
 		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+	}
 
 	if (m_autojump) {
 		// release autojump after a given time

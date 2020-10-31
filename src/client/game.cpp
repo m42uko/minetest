@@ -2439,9 +2439,11 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 {
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 
-	// DO NOT use the isKeyDown method for the forward, backward, left, right
-	// buttons, as the code that uses the controls needs to be able to
-	// distinguish between the two in order to know when to use joysticks.
+	/*
+	 * Note: isKeyDown also reports analog joystick directions as keyDown.
+	 *       isKeyboardMovement can be used to detect whether the source
+	 *       was an actual keyboard.
+	 */
 
 	PlayerControl control(
 		input->isKeyDown(KeyType::FORWARD),
@@ -2454,6 +2456,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
 		isKeyDown(KeyType::PLACE),
+		input->isKeyboardMovement(),
 		cam.camera_pitch,
 		cam.camera_yaw,
 		input->joystick.getAxisWithoutDead(JA_SIDEWARD_MOVE),

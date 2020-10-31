@@ -69,6 +69,8 @@ public:
 
 	bool IsKeyDown(const KeyPress &keyCode) const { return keyIsDown.count(keyCode); }
 
+	bool isKeyboardMovement() const { return false; }
+
 	// Checks whether a key was down and resets the state
 	bool WasKeyDown(const KeyPress &keyCode)
 	{
@@ -165,6 +167,7 @@ public:
 	}
 
 	virtual bool isKeyDown(GameKeyType k) = 0;
+	virtual bool isKeyboardMovement() = 0;
 	virtual bool wasKeyDown(GameKeyType k) = 0;
 	virtual bool wasKeyPressed(GameKeyType k) = 0;
 	virtual bool wasKeyReleased(GameKeyType k) = 0;
@@ -202,6 +205,13 @@ public:
 	virtual bool isKeyDown(GameKeyType k)
 	{
 		return m_receiver->IsKeyDown(keycache.key[k]) || joystick.isKeyDown(k);
+	}
+	virtual bool isKeyboardMovement()
+	{
+		return m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]) ||
+			m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]) ||
+			m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]) ||
+			m_receiver->IsKeyDown(keycache.key[KeyType::RIGHT]);
 	}
 	virtual bool wasKeyDown(GameKeyType k)
 	{
@@ -278,6 +288,7 @@ public:
 	}
 
 	virtual bool isKeyDown(GameKeyType k) { return keydown.count(keycache.key[k]); }
+	virtual bool isKeyboardMovement() { return false; }
 	virtual bool wasKeyDown(GameKeyType k) { return false; }
 	virtual bool wasKeyPressed(GameKeyType k) { return false; }
 	virtual bool wasKeyReleased(GameKeyType k) { return false; }
