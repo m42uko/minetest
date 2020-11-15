@@ -37,6 +37,8 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
 	s16 ax_val = ev.Axis[axis_to_compare];
 
+	// TODO: Not sure, but shouldn't we also consider the deadzone here?
+	// Maybe this will be taken care of with the TODO-changes below...
 	return (ax_val * direction < 0) && (thresh * direction > ax_val * direction);
 }
 
@@ -194,6 +196,8 @@ void JoystickController::setLayoutFromControllerName(const std::string &name)
 
 bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 {
+	bool ret = false;
+
 	if (ev.Joystick != m_joystick_id)
 		return false;
 
@@ -206,12 +210,14 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 	for (const auto &button_key : m_layout.button_keys) {
 		if (button_key.isTriggered(ev)) {
 			keys_pressed.set(button_key.key);
+			ret = true;
 		}
 	}
 
 	for (const auto &axis_key : m_layout.axis_keys) {
 		if (axis_key.isTriggered(ev)) {
 			keys_pressed.set(axis_key.key);
+			ret = true;
 		}
 	}
 
@@ -226,6 +232,7 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 			}
 		} else if (m_pressed_keys[i]) {
 			m_past_released_keys[i] = true;
+			ret = true;
 		}
 
 		m_pressed_keys[i] = keys_pressed[i];
@@ -234,10 +241,11 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 	for (size_t i = 0; i < JA_COUNT; i++) {
 		const JoystickAxisLayout &ax_la = m_layout.axes[i];
 		m_axes_vals[i] = ax_la.invert * ev.Axis[ax_la.axis_id];
+		// TOOD: Check if in range, and only set if in range.
+		//       Do this after #10624 is merged.
 	}
 
-
-	return true;
+	return ret;
 }
 
 void JoystickController::clear()
@@ -248,11 +256,16 @@ void JoystickController::clear()
 	memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
-s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
+float JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
+	float vf = v;
 	if (((v > 0) && (v < m_layout.axes_dead_border)) ||
 			((v < 0) && (v > -m_layout.axes_dead_border)))
 		return 0;
-	return v;
+	vf = (vf - m_layout.axes_dead_border) / (32767.f - m_layout.axes_dead_border);
+	// TODO: Move all of this logic to handleEvent. m_axes_vals will only be greater if outside of deadzone.
+	//       This will only become a return.
+	//       Also waiting for #10624 to be merged.
+	return vf;
 }

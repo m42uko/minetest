@@ -579,8 +579,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		if (control.right)
 			speedH += v3f(1.0f, 0.0f, 0.0f);
 	} else {
-		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis / 32767.f);
-		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis / 32767.f);
+		speedH -= v3f(0.0f, 0.0f, 1.0f) * (control.forw_move_joystick_axis);
+		speedH += v3f(1.0f, 0.0f, 0.0f) * (control.sidew_move_joystick_axis);
 	}
 
 	if (m_autojump) {

@@ -2422,7 +2422,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 #endif
 
 	if (m_cache_enable_joysticks) {
-		f32 c = m_cache_joystick_frustum_sensitivity * (1.f / 32767.f) * dtime;
+		f32 c = m_cache_joystick_frustum_sensitivity * dtime;
 		cam->camera_yaw -= input->joystick.getAxisWithoutDead(JA_FRUSTUM_HORIZONTAL) * c;
 		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) * c;
 	}
