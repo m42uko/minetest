@@ -2407,7 +2407,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 #endif
 
 	if (m_cache_enable_joysticks) {
-		f32 c = m_cache_joystick_frustum_sensitivity * (1.f / 32767.f) * dtime;
+		f32 c = m_cache_joystick_frustum_sensitivity * dtime;
 		cam->camera_yaw -= input->joystick.getAxisWithoutDead(JA_FRUSTUM_HORIZONTAL) * c;
 		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) * c;
 	}
@@ -2425,10 +2425,6 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	// distinguish between the two in order to know when to use joysticks.
 
 	PlayerControl control(
-		input->isKeyDown(KeyType::FORWARD),
-		input->isKeyDown(KeyType::BACKWARD),
-		input->isKeyDown(KeyType::LEFT),
-		input->isKeyDown(KeyType::RIGHT),
 		input->isKeyDown(KeyType::JUMP),
 		input->isKeyDown(KeyType::SPECIAL1),
 		input->isKeyDown(KeyType::SNEAK),
@@ -2437,8 +2433,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->isKeyDown(KeyType::PLACE),
 		cam.camera_pitch,
 		cam.camera_yaw,
-		input->joystick.getAxisWithoutDead(JA_SIDEWARD_MOVE),
-		input->joystick.getAxisWithoutDead(JA_FORWARD_MOVE)
+		input->getMovementSpeed(),
+		input->getMovementDirection()
 	);
 
 	u32 keypress_bits = (
@@ -2477,8 +2473,9 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	// autoforward if set: simulate "up" key
 	if (player->getPlayerSettings().continuous_forward &&
 			client->activeObjectsReceived() && !player->isDead()) {
-		control.up = true;
+		//control.up = true;
 		keypress_bits |= 1U << 0;
+		// TODO: what is this?                                 
 	}
 
 	client->setPlayerControl(control);
